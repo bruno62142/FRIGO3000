@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "frigo-3000-bc448": {
+      "hosting": {
+        "FRIGO3000": [
+          "frigo-3000-bc448"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "frigo-3000-bc448"
+  }
+}
