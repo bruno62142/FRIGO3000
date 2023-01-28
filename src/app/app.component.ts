@@ -51,13 +51,15 @@ export class AppComponent implements OnInit{
     .pipe(map((changes) => changes.map((c) => ({ ...c.payload.val()}))))
     .subscribe((data) => {
       this.history=data; 
-      this.createLineChart()
+      console.log(this.history.keys());
+      this.createLineChart();
     });
     this.test
     .snapshotChanges()
     .pipe(map((changes) => changes.map((c) => ({ ...c.payload.val()}))))
     .subscribe((data) => {
       this.temperature=data; 
+      console.log(this.temperature.values);
       
     });
     this.currentRef.snapshotChanges().subscribe((data) => {
