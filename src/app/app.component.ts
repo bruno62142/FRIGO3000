@@ -15,53 +15,93 @@ import { Renderer2 } from '@angular/core';
 
 export class AppComponent implements OnInit{
   title= 'FRIGO3000';
-  private historyRef: AngularFireList<ESP32_Data>;
-  private test: AngularFireList<ESP32_Data>;
+  private historyTime: AngularFireList<ESP32_Data>;
+  private historyTemperature: AngularFireList<ESP32_Data>;
+  private historyHumidity: AngularFireList<ESP32_Data>;
+  private historyDefPorte: AngularFireList<ESP32_Data>;
+  private historyDefTemperature: AngularFireList<ESP32_Data>;
+  private historyDefHumidity: AngularFireList<ESP32_Data>;
+ 
   private currentRef: AngularFireObject<ESP32_Data>;
-  private history_DefRef: AngularFireList<ESP32_Data>;
+  //private history_DefRef: AngularFireList<ESP32_Data>;
 
-  public history?: ESP32_Data[];
-  public history_def?: ESP32_Data[];
+  public history_time?: ESP32_Data[];
+  public history_temperature?: ESP32_Data[];
+  public history_humidity?: ESP32_Data[];
+
+  public history_def_porte?: ESP32_Data[];
+  public history_def_temperature?: ESP32_Data[];
+  public history_def_humidity?: ESP32_Data[];
+
+
   public current?: ESP32_Data|null;
   public chart_t?: any;
   public chart_h?:any;
-  public selectedOption?: string;
-  public temperature?:ESP32_Data[];
+
 
   constructor(db: AngularFireDatabase,private renderer: Renderer2){
-    this.historyRef= db.list<ESP32_Data>('/history');
-    this.history_DefRef= db.list<ESP32_Data>('/history_def');
+    this.historyTime= db.list<ESP32_Data>('/history_time');
+    this.historyTemperature= db.list<ESP32_Data>('/history_temperature');
+    this.historyHumidity= db.list<ESP32_Data>('/history_humidity');
+
+    this.historyDefPorte= db.list<ESP32_Data>('/historydef_porte');
+    this.historyDefTemperature= db.list<ESP32_Data>('/historydef_temperature');
+    this.historyDefHumidity= db.list<ESP32_Data>('/historydef_humidity');
+
     this.currentRef= db.object<ESP32_Data>('/current');
-    this.test=db.list<ESP32_Data>('/history/temperature');
+ 
 
   }
 
 
   ngOnInit(): void{
    
-    this.history_DefRef
+    /*this.history_DefRef
     .snapshotChanges()
     .pipe(map((changes) => changes.map((c) => ({ ...c.payload.val()}))))
     .subscribe((data) => {
       this.history_def=data; 
   
+    });*/
+    this.historyTime.valueChanges().subscribe((data) =>{
+      this.history_time=data; 
+      //console.log(this.history_time);
+      //this.createLineChart();
     });
-    this.historyRef
-    .snapshotChanges()
-    .pipe(map((changes) => changes.map((c) => ({ ...c.payload.val()}))))
-    .subscribe((data) => {
-      this.history=data; 
-      console.log(this.history.keys());
+
+    this.historyTemperature.valueChanges().subscribe((data) =>{
+      this.history_temperature=data; 
+      //console.log(this.history_temperature);
       this.createLineChart();
     });
-    this.test
-    .snapshotChanges()
-    .pipe(map((changes) => changes.map((c) => ({ ...c.payload.val()}))))
-    .subscribe((data) => {
-      this.temperature=data; 
-      console.log(this.temperature.values);
-      
+
+    this.historyHumidity.valueChanges().subscribe((data) => 
+  {
+      this.history_humidity=data; 
+     // console.log(this.history_humidity);
+      console.log(this.history_humidity);
+      this.createbarChart();
     });
+
+    this.historyDefPorte.valueChanges().subscribe((data) =>{
+      this.history_def_porte=data; 
+      //console.log(this.history_time);
+    
+    });
+
+    this.historyDefTemperature.valueChanges().subscribe((data) =>{
+      this.history_def_temperature=data; 
+      //console.log(this.history_temperature);
+ 
+    });
+
+    this.historyDefHumidity.valueChanges().subscribe((data) => 
+  {
+      this.history_def_humidity=data; 
+     // console.log(this.history_humidity);
+    
+    });
+   
     this.currentRef.snapshotChanges().subscribe((data) => {
       this.current=data.payload.val();
       if(this.current && this.current.TempThermostat) {
@@ -105,46 +145,101 @@ updateMusique()
 
   }
 }
-createLineChart() {
-  if(this.history) {
 
-    if(!this.chart_t) {
+createbarChart() {
+  if(this.history_time && this.history_humidity) {
 
-      // Récupérer les données de température de l'historique
-      
-  let temperatureData = this.history.map(data => data.temperature);
-  
+    let humidityData = this.history_humidity.slice(-2880).map(data => data);
 
-  // Récupérer les données d'humidité de l'historique
-  let humidityData = this.history.map(data => data.humidity);
-
-  // Récupérer les heures de l'historique
-  let labels = this.history.map(data => data.time);
-
-      this.chart_t = new Chart(this.renderer.selectRootElement('#chartjs-dashboard-line'), {
-      type: 'line',
-      data: {
+    // Récupérer les heures de l'historique
+    let labels = this.history_time.slice(-2880).map(data => data);
+    
+    if(this.chart_h) {
+      // Update the chart's data
+      this.chart_t.data = {
           labels: labels,
           datasets: [
-          {
-              label: "temperature",
-              data:[0],
-              backgroundColor: 'red'
-          },
-          
+            {
+              label: "humidity",
+              data: humidityData,
+              backgroundColor: 'blue'
+            },
           ]
-      },
-      options: {
-        
-      }
-  });
-}
+      };
+      this.chart_h.update();
+    } 
+    
+    
+    else if(!this.chart_h){
+      this.chart_h = new Chart(this.renderer.selectRootElement('#chartjs-dashboard-bar'), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: "humidity",
+              data: humidityData,
+              backgroundColor: 'blue'
+            },
+          ]
+        },
+        options: {
+        }
+      });
+      
+    }
+    
+
   }
+}
 
+createLineChart() {
+  if(this.history_temperature && this.history_time ) {
 
+    let temperatureData = this.history_temperature.slice(-2880).map(data => data);
+
+    // Récupérer les heures de l'historique
+    let labels = this.history_time.slice(-2880).map(data => data);
+
+    if(this.chart_t) {
+      // Update the chart's data
+      this.chart_t.data = {
+          labels: labels,
+          datasets: [
+            {
+              label: "temperature",
+              data: temperatureData,
+              backgroundColor: 'red'
+            },
+          ]
+      };
+      this.chart_t.update();
+    } 
   
+    
+    else if(!this.chart_t){
+      this.chart_t = new Chart(this.renderer.selectRootElement('#chartjs-dashboard-line'), {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: "temperature",
+              data: temperatureData,
+              backgroundColor: 'red'
+            },
+          ]
+        },
+        options: {
+        }
+      });
+      
+    }
 
-} 
+  }
+}
+
+ 
 }
 
   

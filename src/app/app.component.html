@@ -1,6 +1,4 @@
- <!-- <div *ngFor="let h of history">
-  <span> Date : {{ h.time}}, Temperature : {{ h.temperature}}, Humidité : {{h.humidity}}</span>
-</div> -->
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -247,34 +245,35 @@
 								</div>
 								<div class="card-body d-flex">
 									<div class="align-self-center w-100">
-										<table class="table table-hover my-0">
-											<thead>
-												<tr>
-													<th class= "d-none d-md-table-cell" style="width:25%">Date</th>
-													<th style="width:20%">Heure</th>
-													<th style="width:45%">Type du défaut</th>
-												</tr>
-											</thead>
-											<tbody>
-												<tr>
-													<td>02 Janvier 2023</td>
-													<td>14:02</td>
-													<td class="d-none d-md-table-cell">Température</td>
-												</tr>
-												<tr class="table-success">
-													<td>13 Janvier 2023</td>
-													<td>10:56</td>
-													<td class="d-none d-md-table-cell">Humidité</td>
-												</tr>
-												<tr>
-													<td>23 Janvier 2023</td>
-													<td>23:12</td>
-													<td class="d-none d-md-table-cell">Porte ouverte</td>
-												</tr>
-											</tbody>
-										</table>
+									  <table class="table table-hover my-0">
+										<thead>
+										  <tr>
+											<th class= "d-none d-md-table-cell" style="width:25%">Date</th>
+											<th style="width:20%">Type</th>
+											
+										  </tr>
+										</thead>
+										<tbody>
+										  <tr *ngFor="let def of history_def_temperature">
+											<td>{{ def }}</td>
+											
+											<td class="d-none d-md-table-cell">Température</td>
+										  </tr>
+										  <tr class="table-success" *ngFor="let def of history_def_humidity">
+										
+											<td>{{ def }}</td>
+											<td class="d-none d-md-table-cell">Humidité</td>
+										  </tr>
+										  <tr *ngFor="let def of history_def_porte">
+											<td>{{ def }}</td>
+											
+											<td class="d-none d-md-table-cell">Porte ouverte</td>
+										  </tr>
+										</tbody>
+									  </table>
 									</div>
-								</div>
+								  </div>
+								  
 							</div>
 						</div>
 						<div class="col-12 col-md-12 col-xxl-6 d-flex order-3 order-xxl-2">
