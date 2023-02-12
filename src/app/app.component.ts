@@ -156,7 +156,7 @@ createbarChart() {
     
     if(this.chart_h) {
       // Update the chart's data
-      this.chart_t.data = {
+      this.chart_h.data = {
           labels: labels,
           datasets: [
             {
